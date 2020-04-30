@@ -3835,7 +3835,7 @@ class Update(Base):
                 f'Unable to determine requested tag for {self.alias}.')
         return tag
 
-    def __json__(self, request=None):
+    def __json__(self, request=None, **kwargs):
         """
         Return a JSON representation of this update.
 
@@ -3845,7 +3845,7 @@ class Update(Base):
         Returns:
             str: A JSON representation of this update.
         """
-        result = super(Update, self).__json__(request=request)
+        result = super(Update, self).__json__(request=request, **kwargs)
         # Duplicate alias as updateid for backwards compat with bodhi1
         result['updateid'] = result['alias']
         # Include the karma total in the results

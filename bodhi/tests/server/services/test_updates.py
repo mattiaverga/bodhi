@@ -1897,6 +1897,7 @@ class TestUpdatesService(BasePyTestCase):
         assert 'application/javascript' in res.headers['Content-Type']
         assert 'callback' in res
         assert 'bodhi-2.0-1.fc17' in res
+        assert 'comments' not in res
 
     def test_list_updates_rss(self):
         res = self.app.get('/rss/updates/',

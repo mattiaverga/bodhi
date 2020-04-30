@@ -418,9 +418,17 @@ def query_updates(request):
     rows_per_page = data.get('rows_per_page')
     pages = int(math.ceil(total / float(rows_per_page)))
     query = query.offset(rows_per_page * (page - 1)).limit(rows_per_page)
+    updates = query.all()
 
+    # exclude comments column to speed up object serialization
+    if request.accept.header_value in ('application/json', 'text/json', 'application/javascript'):
+        updates = [
+            update.__json__(
+                exclude=Update.__exclude_columns__ + ('comments', )
+            ) for update in updates
+        ]
     return_values = dict(
-        updates=query.all(),
+        updates=updates,
         page=page,
         pages=pages,
         rows_per_page=rows_per_page,
