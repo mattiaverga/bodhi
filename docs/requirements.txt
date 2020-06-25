@@ -1,2 +1,2 @@
 cornice_sphinx
-pyasn1-modules
+dogpile.cache
