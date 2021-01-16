@@ -1154,6 +1154,36 @@ class Package(Base):
         # contains FAS group names with commit access.
         return list(committers), list(groups)
 
+    def hascommitaccess(self, username: str, branchname: str) -> bool:
+        """
+        Check on Pagure if a user has commit access on the package/branch.
+
+        Raises:
+            RuntimeError: If Pagure did not give us a 200 code.
+        """
+        pagure_url = config.get('pagure_url')
+        # Pagure uses plural names for its namespaces such as "rpms" except for
+        # container. Flatpaks were moved from 'modules' to 'flatpaks' - hence
+        # a config setting.
+        if self.type == ContentType.container:
+            namespace = self.type.name
+        elif self.type == ContentType.flatpak:
+            namespace = config.get('pagure_flatpak_namespace')
+            # branchname override for all releases
+            branchname = config.get('pagure_flatpak_main_branch')
+        elif self.type == ContentType.module:
+            namespace = self.type.name + 's'
+            # There's no direct map between stream and branch names so override branchname
+            # for the moment
+            branchname = config.get('pagure_module_main_branch')
+        else:
+            namespace = self.type.name + 's'
+
+        pagure_query_url = (f'{pagure_url.rstrip("/")}/api/0/{namespace}/{self.external_name}'
+                            f'/hascommit?user={username}&branch={branchname}')
+        pagure_response = pagure_api_get(pagure_query_url)
+        return pagure_response['hascommit']
+
     @validates('builds')
     def validate_builds(self, key, build):
         """

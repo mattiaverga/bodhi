@@ -460,6 +460,12 @@ class BodhiConfig(dict):
         'pagure_flatpak_namespace': {
             'value': 'modules',
             'validator': str},
+        'pagure_flatpak_main_branch': {
+            'value': 'master',
+            'validator': str},
+        'pagure_module_main_branch': {
+            'value': 'master',
+            'validator': str},
         'pagure_url': {
             'value': 'https://src.fedoraproject.org/pagure/',
             'validator': _validate_tls_url},
