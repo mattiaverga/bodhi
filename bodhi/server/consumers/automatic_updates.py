@@ -161,16 +161,17 @@ class AutomaticUpdateHandler:
 {changelog}
 ```"""
 
-                for b in re.finditer(config.get('bz_regex'), changelog, re.IGNORECASE):
-                    idx = int(b.group(1))
-                    log.debug(f'Adding bug #{idx} to the update.')
-                    bug = Bug.get(idx)
-                    if bug is None:
-                        bug = Bug(bug_id=idx)
-                        dbsession.add(bug)
-                        dbsession.flush()
-                    if bug not in closing_bugs:
-                        closing_bugs.append(bug)
+                if rel.name not in config.get('bz_exclude_rels'):
+                    for b in re.finditer(config.get('bz_regex'), changelog, re.IGNORECASE):
+                        idx = int(b.group(1))
+                        log.debug(f'Adding bug #{idx} to the update.')
+                        bug = Bug.get(idx)
+                        if bug is None:
+                            bug = Bug(bug_id=idx)
+                            dbsession.add(bug)
+                            dbsession.flush()
+                        if bug not in closing_bugs:
+                            closing_bugs.append(bug)
             else:
                 notes = f"Automatic update for {bnvr}."
             update = Update(
@@ -208,6 +209,7 @@ class AutomaticUpdateHandler:
                 log.error(f'Problem obsoleting older updates: {e}')
 
             alias = update.alias
+            buglist = [b.bug_id for b in update.bugs]
 
         # This must be run after dbsession is closed so changes are committed to db
-        work_on_bugs_task.delay(alias, closing_bugs)
+        work_on_bugs_task.delay(alias, buglist)
