@@ -4902,6 +4902,23 @@ class User(Base):
         return template.format(username=self.name)
 
 
+class UserProfile(object):
+    """A user's profile.
+
+    Implemented as a light wrapper around the SQLAlchemy-based User model.
+    """
+
+    def __init__(self, user: User):
+        self.user = user
+
+    def __json__(self, request=None) -> typing.Dict[str, str]:
+        """JSON renderer support."""
+        return {
+            "name": self.user.name,
+            "email": self.user.email,
+        }
+
+
 class Group(Base):
     """
     A group of users.
@@ -4960,6 +4977,18 @@ class BuildrootOverride(Base):
     submitter_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     submitter = relationship('User', lazy='joined', innerjoin=True,
                              backref='buildroot_overrides')
+
+    def __json_v2__(self, request=None) -> typing.Dict[str,
+                                                    typing.Union[str, datetime,
+                                                                 None, UserProfile]]:
+        """JSON renderer support."""
+        return {
+            "notes": self.notes,
+            "expiration_date": self.expiration_date,
+            "expired_date": self.expired_date,
+            "submission_date": self.submission_date,
+            "submitter": UserProfile(self.submitter),
+        }
 
     @property
     def nvr(self) -> str:

@@ -17,6 +17,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """Initialize the Bodhi server."""
 from collections import defaultdict
+from os import path
 import importlib.metadata
 import logging as python_logging
 
@@ -338,6 +339,9 @@ def main(global_config, testing=None, session=None, **settings):
     # Legacy: Redirect the previously self-hosted documentation
     # https://docs.pylonsproject.org/projects/pyramid/en/latest/narr/hybrid.html#using-subpath-in-a-route-pattern
     config.add_route("docs", "/docs/*subpath")
+
+    # OpenAPI3
+    config.include(".openapi")
 
     config.scan('bodhi.server.views')
     config.scan('bodhi.server.services')

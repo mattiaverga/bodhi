@@ -23,6 +23,7 @@ import math
 from cornice import Service
 from cornice.validators import colander_body_validator, colander_querystring_validator
 from pyramid.exceptions import HTTPNotFound
+from pyramid.view import view_config
 from sqlalchemy import distinct, func
 from sqlalchemy.sql import or_
 
@@ -50,6 +51,13 @@ overrides = Service(name='overrides', path='/overrides/',
                     # Note, this 'rw' is not a typo.  the @comments service has
                     # a ``post`` section at the bottom.
                     cors_origins=bodhi.server.security.cors_origins_rw)
+
+overrides_api_v2 = Service(name='overrides_api_v2', path='/api/v2/overrides/',
+                           description='Buildroot Overrides APIv2',
+                           factory=security.PackagerACLFactory,
+                           # Note, this 'rw' is not a typo.  the @comments service has
+                           # a ``post`` section at the bottom.
+                           cors_origins=bodhi.server.security.cors_origins_rw)
 
 overrides_rss = Service(name='overrides_rss', path='/rss/overrides/',
                         description='Buildroot Overrides RSS Feed',
@@ -117,6 +125,10 @@ validators = (
                accept=('text/html'), renderer='overrides.html',
                error_handler=bodhi.server.services.errors.html_handler,
                validators=validators)
+@overrides_api_v2.get(schema=bodhi.server.schemas.ListOverrideSchema(),
+                      accept=("application/json", "text/json"), renderer='json_v2',
+                      error_handler=bodhi.server.services.errors.json_handler,
+                      validators=validators)
 def query_overrides(request):
     """
     Search for overrides by various criteria.
@@ -192,8 +204,8 @@ def query_overrides(request):
         .order_by(None)
     total = db.execute(count_query).scalar()
 
-    page = data.get('page')
-    rows_per_page = data.get('rows_per_page')
+    page = data.get('page', 1)
+    rows_per_page = data.get('rows_per_page', 20)
     pages = int(math.ceil(total / float(rows_per_page)))
     query = query.offset(rows_per_page * (page - 1)).limit(rows_per_page)
 
@@ -203,8 +215,8 @@ def query_overrides(request):
         pages=pages,
         rows_per_page=rows_per_page,
         total=total,
-        chrome=data.get('chrome'),
-        display_user=data.get('display_user'),
+        chrome=data.get('chrome', 1),
+        display_user=data.get('display_user', 1),
     )
     # we need some extra information for the searching / filterings interface
     # when rendering the html, so we add this here.
