@@ -1,0 +1,71 @@
+Builds:
+  name: builds
+  in: query
+  schema:
+    type: array
+    items:
+      type: string
+  style: form
+  explode: false
+
+Expired:
+  name: expired
+  in: query
+  schema:
+    type: boolean
+
+Like:
+  name: like
+  in: query
+  schema:
+    type: string
+
+Page:
+  name: page
+  in: query
+  schema:
+    type: integer
+    minimum: 1
+
+Packages:
+  name: packages
+  in: query
+  schema:
+    type: array
+    items:
+      type: string
+  style: form
+  explode: false
+
+Releases:
+  name: releases
+  in: query
+  schema:
+    type: array
+    items:
+      type: string
+  style: form
+  explode: false
+
+RowsPerPage:
+  name: rows_per_page
+  in: query
+  schema:
+    type: integer
+    minimum: 1
+
+Search:
+  name: search
+  in: query
+  schema:
+    type: string
+
+Submitters:
+  name: submitters
+  in: query
+  schema:
+    type: array
+    items:
+      type: string
+  style: form
+  explode: false

@@ -59,14 +59,15 @@ def includeme(config: Configurator) -> None:
 
     config.include("pyramid_openapi3")
     config.pyramid_openapi3_spec_directory(
-        os.path.join(os.path.dirname(__file__), 'openapi.yaml'),
+        os.path.join(os.path.dirname(__file__), 'openapi', 'openapi.yaml'),
         route='/api/v2/spec')
-    config.pyramid_openapi3_add_explorer(route='/api/v2/')
+    config.pyramid_openapi3_add_explorer(route='/api/v2')
 
     config.add_renderer("json_v2", json_v2_renderer())
 
     # Routes
-    #config.add_route("api_v2_overrides", "/api/v2/overrides/")
+    #config.add_route("overrides_api_v2", "/api/v2/overrides/")
+    config.pyramid_openapi3_register_routes()
 
 
 def json_v2_renderer() -> JSON:

@@ -1,0 +1,39 @@
+BuildrootOverrideModel:
+  type: object
+  required:
+    - notes
+    - expiration_date
+    - expired_date
+    - submission_date
+  properties:
+    notes:
+      type: string
+    expiration_date:
+      type: string
+      format: date-time
+    expired_date:
+      type: string
+      format: date-time
+      nullable: true
+    submission_date:
+      type: string
+      format: date-time
+    submitter:
+      $ref: "model_schemas.yaml#/UserProfileModel"
+
+ResponseStatus:
+  type: string
+  enum:
+    - success
+    - error
+
+UserProfileModel:
+  type: object
+  required:
+    - email
+    - name
+  properties:
+    email:
+      type: string
+    name:
+      type: string

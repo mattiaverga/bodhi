@@ -52,13 +52,6 @@ overrides = Service(name='overrides', path='/overrides/',
                     # a ``post`` section at the bottom.
                     cors_origins=bodhi.server.security.cors_origins_rw)
 
-overrides_api_v2 = Service(name='overrides_api_v2', path='/api/v2/overrides/',
-                           description='Buildroot Overrides APIv2',
-                           factory=security.PackagerACLFactory,
-                           # Note, this 'rw' is not a typo.  the @comments service has
-                           # a ``post`` section at the bottom.
-                           cors_origins=bodhi.server.security.cors_origins_rw)
-
 overrides_rss = Service(name='overrides_rss', path='/rss/overrides/',
                         description='Buildroot Overrides RSS Feed',
                         cors_origins=bodhi.server.security.cors_origins_ro)
@@ -125,10 +118,7 @@ validators = (
                accept=('text/html'), renderer='overrides.html',
                error_handler=bodhi.server.services.errors.html_handler,
                validators=validators)
-@overrides_api_v2.get(schema=bodhi.server.schemas.ListOverrideSchema(),
-                      accept=("application/json", "text/json"), renderer='json_v2',
-                      error_handler=bodhi.server.services.errors.json_handler,
-                      validators=validators)
+@view_config(route_name="overrides_api_v2", openapi=True, renderer='json_v2')
 def query_overrides(request):
     """
     Search for overrides by various criteria.
@@ -154,7 +144,7 @@ def query_overrides(request):
             display_user: The current username.
     """
     db = request.db
-    data = request.validated
+    data = request.validated or request.openapi_validated.parameters.query
     query = db.query(BuildrootOverride)
 
     expired = data.get('expired')
@@ -210,13 +200,14 @@ def query_overrides(request):
     query = query.offset(rows_per_page * (page - 1)).limit(rows_per_page)
 
     return_values = dict(
+        status='success',
         overrides=query.all(),
         page=page,
         pages=pages,
         rows_per_page=rows_per_page,
         total=total,
-        chrome=data.get('chrome', 1),
-        display_user=data.get('display_user', 1),
+        chrome=data.get('chrome', True),
+        display_user=data.get('display_user', True),
     )
     # we need some extra information for the searching / filterings interface
     # when rendering the html, so we add this here.

@@ -1,0 +1,38 @@
+OverridesListResponse:
+  description: OK
+  content:
+    application/json:
+      schema:
+        type: object
+        required:
+          - chrome
+          - display_user
+          - overrides
+          - page
+          - pages
+          - rows_per_page
+          - status
+          - total
+        properties:
+          chrome:
+            type: boolean
+          display_user:
+            type: boolean
+          overrides:
+            type: array
+            items:
+              $ref: "model_schemas.yaml#/BuildrootOverrideModel"
+          page:
+            type: integer
+            minimum: 1
+          pages:
+            type: integer
+            minimum: 1
+          rows_per_page:
+            type: integer
+            minimum: 1
+            maximum: 100
+          status:
+            $ref: "model_schemas.yaml#/ResponseStatus"
+          total:
+            type: integer

@@ -1,0 +1,35 @@
+openapi: "3.0.0"
+
+info:
+  version: "2.0.0"
+  title: Bodhi REST APIs
+
+paths:
+  /api/v2/overrides/:
+    x-pyramid-route-name: overrides_api_v2
+    get:
+      summary: List Buildroot Overrides
+      description: Retrieve a list of Buildroot Overrides based on requested parameters.
+      parameters:
+        - $ref: "request_parameters_schemas.yaml#/Builds"
+        - $ref: "request_parameters_schemas.yaml#/Expired"
+        - $ref: "request_parameters_schemas.yaml#/Like"
+        - $ref: "request_parameters_schemas.yaml#/Page"
+        - $ref: "request_parameters_schemas.yaml#/Packages"
+        - $ref: "request_parameters_schemas.yaml#/Releases"
+        - $ref: "request_parameters_schemas.yaml#/RowsPerPage"
+        - $ref: "request_parameters_schemas.yaml#/Search"
+        - $ref: "request_parameters_schemas.yaml#/Submitters"
+      responses:
+        '200':
+          $ref: "response_schemas.yaml#/OverridesListResponse"
+
+servers:
+  - url: /
+
+components:
+  schemas:
+    BuildrootOverrideModel:
+      $ref: "model_schemas.yaml#/BuildrootOverrideModel"
+    UserProfileModel:
+      $ref: "model_schemas.yaml#/UserProfileModel"
