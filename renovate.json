@@ -4,7 +4,8 @@
     "config:base",
     "schedule:weekdays",
     ":automergeMinor",
-    ":gitSignOff"
+    ":gitSignOff",
+    ":dependencyDashboard"
   ],
   "lockFileMaintenance": {
     "enabled": true,
