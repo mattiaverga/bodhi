@@ -17,9 +17,9 @@ build:
     post_install:
       - pip install poetry
       - poetry config virtualenvs.create false
-      - pushd bodhi-messages && poetry install && popd
-      - pushd bodhi-client && poetry install && popd
-      - pushd bodhi-server && poetry install && popd
+      - cd ./bodhi-messages && poetry install && cd ../
+      - cd ./bodhi-client && poetry install && cd ../
+      - cd ./bodhi-server && poetry install && cd ../
 
 # Build documentation in the "docs/" directory with Sphinx
 sphinx:
